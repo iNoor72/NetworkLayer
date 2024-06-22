@@ -8,7 +8,7 @@
 import Foundation
 
 public class NetworkManager: NetworkServiceProtocol {
-    static let shared = NetworkManager()
+    public static let shared = NetworkManager()
     private init() {}
     
     public func request<T: Decodable>(with endpoint: Endpoint, completion: @escaping (Result<T, NetworkError>) -> Void) {
