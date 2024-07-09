@@ -10,19 +10,31 @@ import Foundation
 public protocol Endpoint {
     var base: String { get }
     var path: String { get }
-    var queryItems: [URLQueryItem] { get }
+    var queryItems: [URLQueryItem]? { get }
     var method: String { get }
     var headers: [String: String]? { get }
     var parameters: [String: Any]? { get }
 }
 
 public extension Endpoint {
+    var headers: [String: String]? {
+        nil
+    }
+    
+    var parameters: [String: Any]? {
+        nil
+    }
+    
+    var queryItems: [URLQueryItem]? {
+        nil
+    }
+    
     private var urlComponents: URLComponents {
         guard var components = URLComponents(string: base) else {
             return URLComponents()
         }
         components.path = path
-        if !queryItems.isEmpty {
+        if let queryItems, !queryItems.isEmpty {
             components.queryItems = queryItems
         }
         return components
