@@ -10,7 +10,7 @@ import Foundation
 public protocol Endpoint {
     var base: String { get }
     var path: String { get }
-    var queryItems: [URLQueryItem]? { get }
+    var queryItems: [String: String]? { get }
     var method: String { get }
     var headers: [String: String]? { get }
     var parameters: [String: Any]? { get }
@@ -25,31 +25,31 @@ public extension Endpoint {
         nil
     }
     
-    var queryItems: [URLQueryItem]? {
+    var queryItems: [String: String]? {
         nil
     }
     
-    private var urlComponents: URLComponents {
-        guard var components = URLComponents(string: base) else {
-            return URLComponents()
-        }
-        components.path = path
-        if let queryItems, !queryItems.isEmpty {
-            components.queryItems = queryItems
-        }
-        return components
+    var requestStringURL: String {
+        base + path
     }
     
     func asURLRequest() throws -> URLRequest {
-        guard let url = urlComponents.url else {
+        guard let baseURL = URL(string: requestStringURL) else {
             throw NetworkError.invalidURL
         }
         
-        var request = URLRequest(url: url)
+        var request = URLRequest(url: baseURL)
         request.httpMethod = method
         request.allHTTPHeaderFields = headers
+        
         if let parameters = parameters {
-            request.httpBody = try? JSONSerialization.data(withJSONObject: parameters, options: .prettyPrinted)
+            request.httpBody = try? JSONSerialization.data(withJSONObject: parameters, options: [])
+        }
+        
+        if let queryParams = queryItems {
+            var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: false)
+            components?.queryItems = queryParams.map { URLQueryItem(name: $0.key, value: $0.value) }
+            request.url = components?.url
         }
         return request
     }
