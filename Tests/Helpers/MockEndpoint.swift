@@ -19,7 +19,7 @@ enum MockEndpoint: Endpoint {
         return "/test"
     }
     
-    var queryItems: [URLQueryItem] {
+    var queryItems: [String: String]? {
         return []
     }
     
