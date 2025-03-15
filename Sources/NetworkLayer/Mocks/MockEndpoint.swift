@@ -20,7 +20,7 @@ enum MockEndpoint: Endpoint {
     }
     
     var queryItems: [String: String]? {
-        return []
+        return [:]
     }
     
     var method: String {

@@ -44,4 +44,34 @@ public class NetworkManager: NetworkServiceProtocol {
             completion(.failure(.invalidURL))
         }
     }
+    
+    public func request<T: Decodable>(with endpoint: Endpoint) async -> Result<T, NetworkError> {
+        let session = URLSession.shared
+        
+        do {
+            let request = try endpoint.asURLRequest()
+            
+            do {
+                let (data, response) = try await session.data(for: request)
+                
+                guard let response = response as? HTTPURLResponse, 200..<300 ~= response.statusCode else {
+                    return .failure(.invalidResponse)
+                }
+                
+                do {
+                    let decoder = JSONDecoder()
+                    let decodedData = try decoder.decode(T.self, from: data)
+                    return .success(decodedData)
+                } catch {
+                    return .failure(.decodingError)
+                }
+                
+            } catch {
+                return .failure(.decodingError)
+            }
+            
+        } catch {
+            return .failure(.invalidURL)
+        }
+    }
 }
