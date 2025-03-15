@@ -42,11 +42,11 @@ public extension Endpoint {
         request.httpMethod = method
         request.allHTTPHeaderFields = headers
         
-        if let parameters = parameters {
+        if let parameters = parameters, !parameters.isEmpty {
             request.httpBody = try? JSONSerialization.data(withJSONObject: parameters, options: [])
         }
         
-        if let queryParams = queryItems {
+        if let queryParams = queryItems, !queryParams.isEmpty {
             var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: false)
             components?.queryItems = queryParams.map { URLQueryItem(name: $0.key, value: $0.value) }
             request.url = components?.url

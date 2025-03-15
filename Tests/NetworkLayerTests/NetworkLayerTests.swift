@@ -41,4 +41,21 @@ final class NetworkLayerTests: XCTestCase {
         
         wait(for: [expectation], timeout: 5)
     }
+    
+    func test_async_request() async {
+        let endpoint = MockEndpoint.mock
+        let networkManager = MockNetworkManager.shared
+        
+        let result: Result<MockModel, NetworkError> = await networkManager.request(with: endpoint)
+        
+        switch result {
+        case .success(let model):
+            XCTAssertEqual(model.id, 1)
+            XCTAssertEqual(model.name, "Noor")
+            XCTAssertEqual(model.body, "Test")
+            
+        case .failure(_):
+            XCTFail()
+        }
+    }
 }
